@@ -1,5 +1,5 @@
 import './app.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import AccountOverview from './account-overview';
 import NotesList from './components/NotesList';
 import Search from './components/Search';
@@ -73,27 +73,35 @@ function App() {
     localStorage.removeItem("session");
     setLogged(null);
   }
+
+  const render = useMemo(() => {
+    return (
+      <>
+        {
+          !logged ? <Login checkLogged={checkLogged}/>
+          :
+          <div className="App">
+            <AccountOverview data={JSON.parse(localStorage.getItem(session))}/>
+            <div className="container">
+              <Header logout={logout}/>
+              <Search handleSearchNote={setSearchText}/>
+              <NotesList 
+                notes={notes.filter((note) => 
+                  note.text.toLowerCase().includes(searchText)
+                )} 
+                handleAddNote={addNote}
+                handleDeleteNote={deleteNote}
+              />
+            </div>
+          </div>
+        }
+      </>
+    );
+  }, [logged,notes,session,searchText])
   
   return (
     <>
-      {
-        !logged ? <Login checkLogged={checkLogged}/>
-        :
-        <div className="App">
-          <AccountOverview data={JSON.parse(localStorage.getItem(session))}/>
-          <div className="container">
-            <Header logout={logout}/>
-            <Search handleSearchNote={setSearchText}/>
-            <NotesList 
-              notes={notes.filter((note) => 
-                note.text.toLowerCase().includes(searchText)
-              )} 
-              handleAddNote={addNote}
-              handleDeleteNote={deleteNote}
-            />
-          </div>
-        </div>
-      }
+      {render}
     </>
   );
 }

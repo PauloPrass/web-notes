@@ -97,7 +97,7 @@ function App() {
         }
       </>
     );
-  }, [logged,notes,session,searchText])
+  }, [logged,notes,session,searchText]);
   
   return (
     <>
